@@ -30,4 +30,8 @@ public class Mesa {
         tenedorIzquierdo.soltar(filosofoId);
         tenedorDerecho.soltar(filosofoId);        
     }
+    
+    public boolean getEstadoTenedor(int i){
+        return tenedores[i].getDisponible();
+    }
 }

@@ -30,5 +30,4 @@ public class Tenedor {
     public boolean getDisponible() {
         return disponible;
     }
-    
 }

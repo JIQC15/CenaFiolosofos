@@ -14,6 +14,7 @@ public class Filosofo extends Thread {
     public boolean estaPensando;
     public Tenedor tenedorAgarradoIzquierdo;
     public Tenedor tenedorAgarradoDerecho;
+    private volatile boolean detenerHilo = false; // Variable para controlar la detención del hilo
 
     public Filosofo(int id, Tenedor tenedorIzquierdo, Tenedor tenedorDerecho, Mesa mesa) {
         this.id = id;
@@ -21,6 +22,10 @@ public class Filosofo extends Thread {
         this.tenedorDerecho = tenedorDerecho;
         this.mesa = mesa;
         this.estaComiendo = false;
+    }
+    
+    public void detener() {
+        detenerHilo = true; // Establecer la bandera de detención en true
     }
 
     public Tenedor getTenedorAgarradoIzquierdo() {
@@ -38,7 +43,7 @@ public class Filosofo extends Thread {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!detenerHilo) {
                 pensar();
                 tomarTenedores();
                 comer();
@@ -53,6 +58,7 @@ public class Filosofo extends Thread {
         estaPensando = true;
         System.out.println("Filosofo " + id + " esta pensando.");
         Thread.sleep((long) (Math.random() * 6000)); // Simula el tiempo de pensamiento
+
     }
 
     private void tomarTenedores() throws InterruptedException {
@@ -73,7 +79,7 @@ public class Filosofo extends Thread {
         System.out.println("Filosofo " + id + " tiene los tenedores.");
     }
 
-    private void comer(){
+    private void comer() {
         estaComiendo = true;
         System.out.println("Filosofo " + id + " esta comiendo.");
         try {
@@ -92,4 +98,4 @@ public class Filosofo extends Thread {
     public boolean getEstado() {
         return estaComiendo;
     }
-}   
+}

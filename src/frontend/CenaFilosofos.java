@@ -6,32 +6,44 @@ import backend.Tenedor;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 public class CenaFilosofos extends javax.swing.JFrame {
 
     ImageIcon EstadoComiendo = new ImageIcon(getClass().getResource("/IMG/Comiendo.png"));
     ImageIcon EstadoPensando = new ImageIcon(getClass().getResource("/IMG/Pensando.png"));
-    ImageIcon TenedorFilosofo1 = new ImageIcon(getClass().getResource("/IMG/TenedorRotIzq.png"));
+    ImageIcon Tenedor1 = new ImageIcon(getClass().getResource("/IMG/TenedorRotIzq.png"));
+    ImageIcon Tenedor2 = new ImageIcon(getClass().getResource("/IMG/TenedorRotIzq.png"));
+    ImageIcon Tenedor3 = new ImageIcon(getClass().getResource("/IMG/Tenedor.png"));
+    ImageIcon Tenedor4 = new ImageIcon(getClass().getResource("/IMG/TenedorRotDer.png"));
+    ImageIcon Tenedor5 = new ImageIcon(getClass().getResource("/IMG/TenedorReves.png"));
 
     public Tenedor tenedor;
     public Mesa mesa;
     public Filosofo filosofo;
+    private Timer timer;
 
-    private ArrayList<javax.swing.JLabel> etiquetasDeEstado = new ArrayList<>();
-    private ArrayList<javax.swing.JLabel> etiquetasDeTenedores = new ArrayList<>();
     public ArrayList<javax.swing.JLabel> etiquetasFilosofos = new ArrayList<>();
-    private boolean[] estadosFilosofos = new boolean[5]; // Supongo que tienes 5 filósofos
+    private ArrayList<Filosofo> filosofos = new ArrayList<>();
+
+    private boolean[] estadosFilosofos = new boolean[5]; // Hay en la mesa 5 filosofos
+    Filosofo[] comensales;
 
     int filosofosEnMesa = contarFilosofos();
     Mesa planificador = new Mesa(filosofosEnMesa);
-    int TenedoresEnMesa = contarTenedoresEnMesa();
 
     public CenaFilosofos() {
         initComponents();
 
+        comensales = new Filosofo[filosofosEnMesa];
+
+        // Inicializar el timer para actualizar la interfaz cada 1000 milisegundos (1 segundo)
+        timer = new Timer(1000, (e) -> {
+            actualizarUIEstados();
+        });
+
         filosofosEnMesa = contarFilosofos(); // Mover esta línea aquí
         planificador = new Mesa(filosofosEnMesa); // Mover esta línea aquí
-        TenedoresEnMesa = contarTenedoresEnMesa();
     }
 
     @SuppressWarnings("unchecked")
@@ -55,17 +67,18 @@ public class CenaFilosofos extends javax.swing.JFrame {
         lblTenedor3 = new javax.swing.JLabel();
         lblTenedor4 = new javax.swing.JLabel();
         lblTenedor5 = new javax.swing.JLabel();
-        lblNumTenedor2 = new javax.swing.JLabel();
-        lblNumTenedor5 = new javax.swing.JLabel();
         lblNumTenedor1 = new javax.swing.JLabel();
+        lblNumTenedor2 = new javax.swing.JLabel();
         lblNumTenedor3 = new javax.swing.JLabel();
         lblNumTenedor4 = new javax.swing.JLabel();
+        lblNumTenedor5 = new javax.swing.JLabel();
         lblMesa = new javax.swing.JLabel();
         lblIMGEstado0 = new javax.swing.JLabel();
         lblIMGEstado1 = new javax.swing.JLabel();
         lblIMGEstado2 = new javax.swing.JLabel();
         lblIMGEstado3 = new javax.swing.JLabel();
         lblIMGEstado4 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,7 +94,7 @@ public class CenaFilosofos extends javax.swing.JFrame {
                 btnEmpezarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnEmpezar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, 102, 34));
+        jPanel1.add(btnEmpezar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 102, 34));
 
         lblFilosofo0.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/FilosofoArabia.png"))); // NOI18N
         jPanel1.add(lblFilosofo0, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 210, 90, 90));
@@ -114,33 +127,19 @@ public class CenaFilosofos extends javax.swing.JFrame {
 
         Plato4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Spaguetti.png"))); // NOI18N
         jPanel1.add(Plato4, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 180, 50, 50));
-
-        lblTenedor1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/TenedorRotIzq.png"))); // NOI18N
         jPanel1.add(lblTenedor1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 220, -1, -1));
-
-        lblTenedor2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/TenedorRotIzq.png"))); // NOI18N
         jPanel1.add(lblTenedor2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, -1, 30));
-
-        lblTenedor3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Tenedor.png"))); // NOI18N
         jPanel1.add(lblTenedor3, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 390, -1, -1));
-
-        lblTenedor4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/TenedorRotDer.png"))); // NOI18N
         jPanel1.add(lblTenedor4, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 320, -1, -1));
-
-        lblTenedor5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/TenedorReves.png"))); // NOI18N
         jPanel1.add(lblTenedor5, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 200, -1, -1));
-
-        lblNumTenedor2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblNumTenedor2.setText("2");
-        jPanel1.add(lblNumTenedor2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, -1, -1));
-
-        lblNumTenedor5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblNumTenedor5.setText("5");
-        jPanel1.add(lblNumTenedor5, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 160, -1, -1));
 
         lblNumTenedor1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblNumTenedor1.setText("1");
         jPanel1.add(lblNumTenedor1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 190, -1, -1));
+
+        lblNumTenedor2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblNumTenedor2.setText("2");
+        jPanel1.add(lblNumTenedor2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, -1, -1));
 
         lblNumTenedor3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblNumTenedor3.setText("3");
@@ -150,6 +149,10 @@ public class CenaFilosofos extends javax.swing.JFrame {
         lblNumTenedor4.setText("4");
         jPanel1.add(lblNumTenedor4, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 330, -1, -1));
 
+        lblNumTenedor5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblNumTenedor5.setText("5");
+        jPanel1.add(lblNumTenedor5, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 160, -1, -1));
+
         lblMesa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Mesa redonda.png"))); // NOI18N
         jPanel1.add(lblMesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 300, 300));
         jPanel1.add(lblIMGEstado0, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 80, 80));
@@ -157,6 +160,16 @@ public class CenaFilosofos extends javax.swing.JFrame {
         jPanel1.add(lblIMGEstado2, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 430, 80, 80));
         jPanel1.add(lblIMGEstado3, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 230, 80, 80));
         jPanel1.add(lblIMGEstado4, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 0, 80, 80));
+
+        jButton1.setBackground(new java.awt.Color(0, 102, 102));
+        jButton1.setFont(new java.awt.Font("Book Antiqua", 2, 12)); // NOI18N
+        jButton1.setText("DETENER");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 50, -1, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -181,41 +194,48 @@ public class CenaFilosofos extends javax.swing.JFrame {
         iniciarPrograma();
     }//GEN-LAST:event_btnEmpezarActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        detenerSimulacion();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     //METODOS
-//    public void iniciarPrograma() {
-//
-//        System.out.println("Hay en la mesa: " + filosofosEnMesa + " Filosofos.");
-//
-//        if (filosofosEnMesa >= 2) {
-//            for (int i = 0; i < filosofosEnMesa; i++) {
-//                Filosofo filosofos = new Filosofo(i, planificador.getTenedorIzquierdo(i), planificador.getTenedorIzquierdo(i), planificador);
-//
-//                filosofos.start();
-//            }
-//            actualizarEstadoFilosofo();
-//
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Debe haber al menos 2 filósofos para iniciar la simulación.", "Error", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
     public void iniciarPrograma() {
         System.out.println("Hay en la mesa: " + filosofosEnMesa + " Filosofos.");
-
+        
         if (filosofosEnMesa >= 2) {
             for (int i = 0; i < filosofosEnMesa; i++) {
+
                 Filosofo filosofo = new Filosofo(i, planificador.getTenedorIzquierdo(i), planificador.getTenedorDerecho(i), planificador);
-                
+                filosofos.add(filosofo); // Agregar filósofo a la lista
+                // Iniciar el timer
+                timer.start();
 
                 filosofo.start();
-
-                // Actualizar el estado del filósofo como comiendo
-//                estadosFilosofos[i] = filosofo.getEstado();
-               
             }
-                actualizarEstadoFilosofo();
+            actualizarUIEstados();
         } else {
             JOptionPane.showMessageDialog(this, "Debe haber al menos 2 filósofos para iniciar la simulación.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public void detenerSimulacion() {
+        // // Detener todos los filósofos
+        for (Filosofo filosofo : filosofos) {
+            filosofo.detener(); // Llama al método detener de cada filósofo
+        }
+
+        // Detener el timer de actualización de la interfaz
+        timer.stop();
+
+        for (Filosofo filosofo : filosofos) {
+            try {
+                filosofo.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Agregas agregar aquí cualquier otra lógica de limpieza o notificaciones que desees.
     }
 
     public int contarFilosofos() {
@@ -237,57 +257,66 @@ public class CenaFilosofos extends javax.swing.JFrame {
         return cantidadFilosofos;
     }
 
-    public int contarTenedoresEnMesa() {
-        int cantidadTenedores = 0;
-
-        // Lista de etiquetas de filósofos
-        etiquetasDeTenedores.add(lblNumTenedor1);
-        etiquetasDeTenedores.add(lblNumTenedor2);
-        etiquetasDeTenedores.add(lblNumTenedor3);
-        etiquetasDeTenedores.add(lblNumTenedor4);
-        etiquetasDeTenedores.add(lblNumTenedor5);
-
-        // Iterar a través de las etiquetas y contar las que no son nulas
-        for (javax.swing.JLabel etiqueta : etiquetasFilosofos) {
-            if (etiqueta != null) {
-                cantidadTenedores++;
-            }
-        }
-        return cantidadTenedores;
-    }
-
-    private void actualizarEstadoFilosofo() {
+    public void actualizarUIEstados() {
         Thread ventana = new Thread(() -> {
-            for (int i = 0; i < estadosFilosofos.length; i++) {
-                boolean estadoFilosofo = estadosFilosofos[i];
-                actualizarImagenEstado(i, estadoFilosofo);
+            for (Filosofo filosofo : filosofos) {
+                int numeroFilosofo = filosofo.idFilosofo();
+
+                switch (numeroFilosofo) {
+                    case 0:
+                        if (filosofo.getEstado() == true) {
+                            lblIMGEstado0.setIcon(EstadoComiendo);
+                            lblTenedor1.setIcon(null);
+                            lblTenedor2.setIcon(null);
+                        } else {
+                            lblIMGEstado0.setIcon(EstadoPensando);
+                            lblTenedor1.setIcon(Tenedor1);
+                        }
+                        break;
+                    case 1:
+                        if (filosofo.getEstado()) {
+                            lblIMGEstado1.setIcon(EstadoComiendo);
+                            lblTenedor2.setIcon(null);
+                            lblTenedor3.setIcon(null);
+                        } else {
+                            lblIMGEstado1.setIcon(EstadoPensando);
+                            lblTenedor2.setIcon(Tenedor2);
+                        }
+                        break;
+                    case 2:
+                        if (filosofo.getEstado()) {
+                            lblIMGEstado2.setIcon(EstadoComiendo);
+                            lblTenedor3.setIcon(null);
+                            lblTenedor4.setIcon(null);
+                        } else {
+                            lblIMGEstado2.setIcon(EstadoPensando);
+                            lblTenedor3.setIcon(Tenedor3);
+                        }
+                        break;
+                    case 3:
+                        if (filosofo.getEstado()) {
+                            lblIMGEstado3.setIcon(EstadoComiendo);
+                            lblTenedor4.setIcon(null);
+                            lblTenedor5.setIcon(null);
+                        } else {
+                            lblIMGEstado3.setIcon(EstadoPensando);
+                            lblTenedor4.setIcon(Tenedor4);
+                        }
+                        break;
+                    case 4:
+                        if (filosofo.getEstado()) {
+                            lblIMGEstado4.setIcon(EstadoComiendo);
+                            lblTenedor5.setIcon(null);
+                            lblTenedor1.setIcon(null);
+                        } else {
+                            lblIMGEstado4.setIcon(EstadoPensando);
+                            lblTenedor5.setIcon(Tenedor5);
+                        }
+                        break;
+                }
             }
         });
         ventana.start();
-    }
-
-    private void actualizarImagenEstado(int indiceFilosofo, boolean estadoComiendo) {
-        ImageIcon imagenEstado = estadoComiendo ? EstadoComiendo : EstadoPensando;
-
-        switch (indiceFilosofo) {
-            case 0:
-                lblIMGEstado0.setIcon(imagenEstado);
-                break;
-            case 1:
-                lblIMGEstado1.setIcon(imagenEstado);
-                break;
-            case 2:
-                lblIMGEstado2.setIcon(imagenEstado);
-                break;
-            case 3:
-                lblIMGEstado3.setIcon(imagenEstado);
-                break;
-            case 4:
-                lblIMGEstado4.setIcon(imagenEstado);
-                break;
-            default:
-                break;
-        }
     }
 
     //MetodoMAIN
@@ -324,6 +353,7 @@ public class CenaFilosofos extends javax.swing.JFrame {
     private javax.swing.JLabel Plato3;
     private javax.swing.JLabel Plato4;
     private javax.swing.JButton btnEmpezar;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblFilosofo0;
     private javax.swing.JLabel lblFilosofo1;

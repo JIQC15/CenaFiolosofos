@@ -1,6 +1,7 @@
 
 package frontend;
 
+import java.applet.AudioClip;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -13,6 +14,9 @@ public class Presentacion extends javax.swing.JFrame {
     public Presentacion() {
         this.setContentPane(fondo);
         initComponents();
+        AudioClip Sound;
+        Sound = java.applet.Applet.newAudioClip(getClass().getResource("/Musica/GerudoValley.wav"));
+        Sound.loop();
     }
 
     @SuppressWarnings("unchecked")
@@ -112,7 +116,6 @@ public class Presentacion extends javax.swing.JFrame {
             }
         });
     }
-
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -134,5 +137,4 @@ public class Presentacion extends javax.swing.JFrame {
             super.paint(g);
         }
     }
-
 }
