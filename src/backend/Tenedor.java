@@ -2,8 +2,8 @@ package backend;
 
 public class Tenedor {
 
-    private int numero;
-    private boolean disponible = true;
+    public int numero;
+    public boolean disponible = true;
 
     public Tenedor(int numero) {
         this.numero = numero;
@@ -26,4 +26,9 @@ public class Tenedor {
     public int getNumero() {
         return numero;
     }
+    
+    public boolean getDisponible() {
+        return disponible;
+    }
+    
 }

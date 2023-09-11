@@ -1,15 +1,15 @@
 package backend;
 
 public class Mesa {
-
-    private int numFilosofos;
-    private Tenedor[] tenedores;
+    
+    public int numFilosofos;
+    public Tenedor[] tenedores;
 
     public Mesa(int numFilosofos) {
         this.numFilosofos = numFilosofos;
         tenedores = new Tenedor[numFilosofos];
         for (int i = 0; i < numFilosofos; i++) {
-            tenedores[i] = new Tenedor(i + 1);
+            tenedores[i] = new Tenedor(i);
         }
     }
 
@@ -22,12 +22,12 @@ public class Mesa {
     }
 
     public void tomarTenedor(int filosofoId, Tenedor tenedorIzquierdo, Tenedor tenedorDerecho) throws InterruptedException {
-        tenedorIzquierdo.tomar(filosofoId);
-        tenedorDerecho.tomar(filosofoId);
+        tenedorIzquierdo.tomar(filosofoId); 
+        tenedorDerecho.tomar(filosofoId);        
     }
 
     public void soltarTenedor(int filosofoId, Tenedor tenedorIzquierdo, Tenedor tenedorDerecho) {
         tenedorIzquierdo.soltar(filosofoId);
-        tenedorDerecho.soltar(filosofoId);
+        tenedorDerecho.soltar(filosofoId);        
     }
 }
