@@ -1,11 +1,15 @@
 
 package frontend;
 
-import java.applet.AudioClip;
+//import java.applet.AudioClip;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
 
 public class Presentacion extends javax.swing.JFrame {
     
@@ -14,9 +18,11 @@ public class Presentacion extends javax.swing.JFrame {
     public Presentacion() {
         this.setContentPane(fondo);
         initComponents();
-        AudioClip Sound;
-        Sound = java.applet.Applet.newAudioClip(getClass().getResource("/Musica/GerudoValley.wav"));
-        Sound.loop();
+        reproducirAudio("/Musica/GerudoValley.wav");
+
+//        AudioClip Sound;
+//        Sound = java.applet.Applet.newAudioClip(getClass().getResource("/Musica/GerudoValley.wav"));
+//        Sound.loop();
     }
 
     @SuppressWarnings("unchecked")
@@ -116,6 +122,19 @@ public class Presentacion extends javax.swing.JFrame {
             }
         });
     }
+    
+    private void reproducirAudio(String ruta) {
+    try {
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(ruta));
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioInputStream);
+        clip.loop(Clip.LOOP_CONTINUOUSLY); // Para reproducir en bucle
+        clip.start();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

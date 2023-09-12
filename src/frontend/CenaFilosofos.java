@@ -78,6 +78,7 @@ public class CenaFilosofos extends javax.swing.JFrame {
         lblIMGEstado2 = new javax.swing.JLabel();
         lblIMGEstado3 = new javax.swing.JLabel();
         lblIMGEstado4 = new javax.swing.JLabel();
+        btnDetener = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -161,15 +162,23 @@ public class CenaFilosofos extends javax.swing.JFrame {
         jPanel1.add(lblIMGEstado3, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 230, 80, 80));
         jPanel1.add(lblIMGEstado4, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 0, 80, 80));
 
-        jButton1.setBackground(new java.awt.Color(0, 102, 102));
-        jButton1.setFont(new java.awt.Font("Book Antiqua", 2, 12)); // NOI18N
-        jButton1.setText("DETENER");
+        btnDetener.setBackground(new java.awt.Color(0, 102, 102));
+        btnDetener.setFont(new java.awt.Font("Book Antiqua", 2, 12)); // NOI18N
+        btnDetener.setText("DETENER");
+        btnDetener.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetenerActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnDetener, new org.netbeans.lib.awtextra.AbsoluteConstraints(474, 40, 90, 40));
+
+        jButton1.setText("RENUDAR");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 50, -1, 30));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 100, 100, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -191,17 +200,25 @@ public class CenaFilosofos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEmpezarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEmpezarActionPerformed
+        btnEmpezar.setVisible(false);
+        btnDetener.setVisible(true);
         iniciarPrograma();
     }//GEN-LAST:event_btnEmpezarActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnDetenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetenerActionPerformed
         detenerSimulacion();
+        btnDetener.setVisible(false);
+        btnEmpezar.setVisible(true);
+    }//GEN-LAST:event_btnDetenerActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        reanudarSimulacio();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     //METODOS
     public void iniciarPrograma() {
         System.out.println("Hay en la mesa: " + filosofosEnMesa + " Filosofos.");
-        
+
         if (filosofosEnMesa >= 2) {
             for (int i = 0; i < filosofosEnMesa; i++) {
 
@@ -221,7 +238,7 @@ public class CenaFilosofos extends javax.swing.JFrame {
     public void detenerSimulacion() {
         // // Detener todos los filósofos
         for (Filosofo filosofo : filosofos) {
-            filosofo.detener(); // Llama al método detener de cada filósofo
+            filosofo.suspend(); // Llama al método detener de cada filósofo
         }
 
         // Detener el timer de actualización de la interfaz
@@ -234,8 +251,24 @@ public class CenaFilosofos extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
+    }
+    
+    public void reanudarSimulacio(){
+        // // Detener todos los filósofos
+        for (Filosofo filosofo : filosofos) {
+            filosofo.resume(); // Llama al método detener de cada filósofo
+        }
 
-        // Agregas agregar aquí cualquier otra lógica de limpieza o notificaciones que desees.
+        // Detener el timer de actualización de la interfaz
+        timer.restart();
+
+        for (Filosofo filosofo : filosofos) {
+            try {
+                filosofo.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public int contarFilosofos() {
@@ -262,15 +295,17 @@ public class CenaFilosofos extends javax.swing.JFrame {
             for (Filosofo filosofo : filosofos) {
                 int numeroFilosofo = filosofo.idFilosofo();
 
-                switch (numeroFilosofo) {
+                switch(numeroFilosofo) {
                     case 0:
-                        if (filosofo.getEstado() == true) {
+                        if (filosofo.getEstado()) {
                             lblIMGEstado0.setIcon(EstadoComiendo);
-                            lblTenedor1.setIcon(null);
-                            lblTenedor2.setIcon(null);
+                            lblTenedor1.setVisible(false);
+                            lblTenedor2.setVisible(false);
                         } else {
                             lblIMGEstado0.setIcon(EstadoPensando);
                             lblTenedor1.setIcon(Tenedor1);
+                            lblTenedor1.setVisible(true);
+                            lblTenedor2.setVisible(true);
                         }
                         break;
                     case 1:
@@ -281,26 +316,31 @@ public class CenaFilosofos extends javax.swing.JFrame {
                         } else {
                             lblIMGEstado1.setIcon(EstadoPensando);
                             lblTenedor2.setIcon(Tenedor2);
+                            lblTenedor3.setVisible(true);
                         }
                         break;
                     case 2:
                         if (filosofo.getEstado()) {
                             lblIMGEstado2.setIcon(EstadoComiendo);
-                            lblTenedor3.setIcon(null);
-                            lblTenedor4.setIcon(null);
+                            lblTenedor3.setVisible(false);
+                            lblTenedor4.setVisible(false);
                         } else {
                             lblIMGEstado2.setIcon(EstadoPensando);
                             lblTenedor3.setIcon(Tenedor3);
+                            lblTenedor4.setVisible(true);
+//                            lblTenedor4.setVisible(true);
                         }
                         break;
                     case 3:
                         if (filosofo.getEstado()) {
                             lblIMGEstado3.setIcon(EstadoComiendo);
-                            lblTenedor4.setIcon(null);
-                            lblTenedor5.setIcon(null);
+                            lblTenedor4.setVisible(false);
+                            lblTenedor5.setVisible(false);
                         } else {
                             lblIMGEstado3.setIcon(EstadoPensando);
                             lblTenedor4.setIcon(Tenedor4);
+                            lblTenedor5.setVisible(true);
+//                            lblTenedor5.setVisible(true);
                         }
                         break;
                     case 4:
@@ -314,6 +354,8 @@ public class CenaFilosofos extends javax.swing.JFrame {
                         }
                         break;
                 }
+                this.revalidate();
+                this.repaint();
             }
         });
         ventana.start();
@@ -352,6 +394,7 @@ public class CenaFilosofos extends javax.swing.JFrame {
     private javax.swing.JLabel Plato2;
     private javax.swing.JLabel Plato3;
     private javax.swing.JLabel Plato4;
+    private javax.swing.JButton btnDetener;
     private javax.swing.JButton btnEmpezar;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
